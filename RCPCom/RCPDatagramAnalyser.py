@@ -12,8 +12,10 @@ class RCPDatagramAnalyser:
             1: "HandShakeMsg",
             2: "HandShakeCommitMsg",
             3: "MotorMsg",
-            4: "CTImage"
+            4: "CTImage",
+	    5: "CloseSessionMsg"
         }
+
         self.switcher_instruction = {
             0: "catheterMoveInstruction",
             1: "guidewireProgressInstruction",
@@ -33,7 +35,13 @@ class RCPDatagramAnalyser:
             self.decode_motor_message(datagram)
         elif self.switcher[datagram.get_data_type()] == "CTImage":
             pass
+	elif self.switcher[datagram.get_data_type()] == "CloseSessionMsg":
+	    self.decode_close_session_message(datagram)	
     
+    def decode_close_session_message(self, datagram):
+	datagram_body = datagram.get_itc_datagram_body()	
+	self.parent.close_session()	
+
     def decode_hello_message(self, datagram):
 	x = 1
 

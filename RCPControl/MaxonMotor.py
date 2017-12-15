@@ -222,7 +222,6 @@ class MaxonMotor(object):
         self.CloseAllDevices.restype = BOOL
             
         self.open_device()
-
         
     
     #Open Device

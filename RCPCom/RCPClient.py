@@ -6,6 +6,7 @@ import os
 from RCPOutputQueue import OutputQueue
 from RCPCom.RCPOutputQueueManager import OutputQueueManager
 
+
 class RCPClient:
     def __init__(self, _outputQueueManager):
         self.launching = False
@@ -75,7 +76,7 @@ class RCPClient:
         return msg
 
     def send_handshake_message(self):
-        print 'hand shake msg sending'
+        
         # header 10 byte
         data_type = 1  # 2
         origin_id = 1  # 1
@@ -96,7 +97,7 @@ class RCPClient:
               + chr(timestamps_msb % 256) + chr(timestamps_msb / 256) \
               + chr(dlc % 256) + chr(dlc / 256) + chr(ip[0]) + chr(ip[1]) + chr(ip[2]) + chr(ip[3]) \
               + chr(port % 256) + chr(port / 256)
-
+        print 'hand shake msg sending', data_type % 256, data_type / 256
         msg_len = len(msg)
 
         for x in range(msg_len, 1024):
@@ -108,8 +109,9 @@ class RCPClient:
         self.addr = addr
         self.connection = socket.socket()
         self.connection.connect((addr, port))
-        # time.sleep(1)
-        self.send_handshake_message()
+        #time.sleep(1)
+	for i in range(3):
+            self.send_handshake_message()
 
     def launch_trasmission_task(self):
         print "connected... start real time communication task"

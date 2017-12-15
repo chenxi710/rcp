@@ -31,3 +31,6 @@ class RCPComStack():
         for client in self.clientList:
             if client.get_addr() == addr:
                 client.launch()
+
+    def close_session(self):
+	self.context.close_system()

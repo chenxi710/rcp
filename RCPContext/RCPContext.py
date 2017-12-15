@@ -14,7 +14,25 @@ class RCPContext:
         self.contrastMediaPushInstructionSequence = []
 
         self.retractInstructionSequence = []
-	self.guidewireMovingDistance = []	
+	self.guidewireMovingDistance = []
+	
+	self.systemStatus = True
+
+    def close_system(self):
+	self.systemStatus = False
+	
+	self.catheterMoveInstructionSequence = []
+        self.guidewireProgressInstructionSequence = []
+        self.guidewireRotateInstructionSequence = []
+        self.contrastMediaPushInstructionSequence = []
+        self.retractInstructionSequence = []
+        self.guidewireMovingDistance = []
+	
+    def open_system(self):
+	self.systemStatus = True
+
+    def get_system_status(self):
+	return self.systemStatus
 
     def clear(self):
         self.catheterMoveInstructionSequence = []

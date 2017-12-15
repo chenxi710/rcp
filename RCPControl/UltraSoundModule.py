@@ -18,7 +18,7 @@ class UltraSoundModule(object):
         GPIO.setup(self.Trig, GPIO.OUT, initial=GPIO.LOW)
 	GPIO.setup(self.Echo, GPIO.IN)
 	self.moveTask = threading.Thread(None, self.read)
-       	self.moveTask.start()
+       	#self.moveTask.start()
 				
     def read(self):
 	cpt = 0
@@ -35,7 +35,9 @@ class UltraSoundModule(object):
 			
 		distance = round(((end-start)*340*100/2),2)
 			
-		time.sleep(0.05)
-
+		time.sleep(0.5)
+		#print distance
 		self.context.set_distance(distance)
-		cpt += 1	
+		cpt += 1
+
+#x = UltraSoundModule(0)	

@@ -32,6 +32,9 @@ class OrientalMotor(object):
         self.position = 0
         self.pos_speed = 60
 
+    def close_device(self):
+	self.flag = False
+
     def set_speed(self, speed):
         if speed > 0:
             self.speedFlag = 1
@@ -138,7 +141,7 @@ class OrientalMotor(object):
             time.sleep(0.0005*60/self.pos_speed)
             self.count += 1
 
-motor = OrientalMotor(20, 21)
-motor.set_speed(300)
-time.sleep(5)
-motor.set_speed(0)
+#motor = OrientalMotor(20, 21)
+#motor.set_speed(-300)
+#time.sleep(5)
+#motor.set_speed(0)

@@ -23,15 +23,26 @@ class Dispatcher(object):
         self.gripperFront = Gripper(7)
         self.gripperBack = Gripper(8)
 
-	#self.ultraSoundModule = UltraSoundModule(context)                
+        #self.ultraSoundModule = UltraSoundModule(context)
+                
         self.dispatchTask = threading.Thread(None, self.listening)
         self.dispatchTask.start()
         self.cptt = 0;
         
     def listening(self):
         while self.flag:
-            self.decode()
-            time.sleep(0.02)
+            
+            if not self.context.get_system_status():
+		self.guidewireRotateMotor.close_device()
+		self.guidewireProgressMotor.close_device()
+		self.catheterMotor.close_device()
+		self.angioMotor.close_device()
+		self.flag = False	
+	    else:
+	    	self.decode()	
+
+	    time.sleep(0.05)
+	    
 
     def decode(self):
         if self.context.get_catheter_move_instruction_sequence_length() > 0:
