@@ -24,7 +24,7 @@ def main():
     
     instruments = Dispatcher(context)
 
-    com_stack.connectera("172.20.141.127", 10704)
+    com_stack.connectera("172.20.141.191", 10704)
 
 
 if __name__ == '__main__':

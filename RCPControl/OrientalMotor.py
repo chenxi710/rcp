@@ -24,13 +24,17 @@ class OrientalMotor(object):
 
         #velocity mode
         self.speed = 1
-        self.moveTask = threading.Thread(None, self.continious_move)
-        self.moveTask.start()
 
         #position mode
-        self.pos_motor_flag = 1
+        self.pos_motor_flag = 2
+	self.re_vol_pos = 6.5
         self.position = 0
+	self.re_volsp_possp = 30 
         self.pos_speed = 60
+
+	self.moveTask = threading.Thread(None, self.continuous_move)
+        self.moveTask.start()
+
 
     def close_device(self):
 	self.flag = False
@@ -44,8 +48,8 @@ class OrientalMotor(object):
         
         if speed == 0:
             self.speed = 1
-        
-    def continious_move(self):
+    
+    def continuous_move(self):
         while self.flag:
             
             if self.speed in range(0, 20):
@@ -79,25 +83,23 @@ class OrientalMotor(object):
         time.sleep(0.0005*60/self.speed) 
         self.count += 1
 
-    #Position Mode
-    
-    def set_position(self, position):
-        self.position = position
+    #Position Mode    
+    def set_position(self, volume):
+        self.position = int(volume*self.re_vol_pos)
 
-    def set_pos_speed(self, pos_speed):
-        self.pos_speed = pos_speed
+    def set_pos_speed(self, vol_speed):
+        self.pos_speed = int(vol_speed*self.re_volsp_possp)
         
-##    def continious_move_position(self):
-##        while self.flag:
-##            if self.speed in range(-1, 1):
-##                time.sleep(0.1)
-##                continue
-##            
-##            if self.speed > 1:
-##                    
-##                self.push()
-##            elif self.speed < -1:
-##                self.pull()
+    def continious_move_position(self):
+        while self.flag:
+            if self.speed in range(-1, 1):
+                time.sleep(0.1)
+                continue
+            
+            if self.speed > 1:                   
+                self.push()
+            elif self.speed < -1:
+                self.pull()
 
     def idt_motor(self):    #identify the motor type
         #if advancement motor, pos_motor_flag=4;
@@ -125,7 +127,8 @@ class OrientalMotor(object):
     
     def position_push(self):
         self.idt_motor()
-        for i in range(0, 1000*self.position/self.pos_motor_flag): 
+	distance = int(1000*self.position/self.pos_motor_flag)
+        for i in range(0, distance): 
             GPIO.output(self.pushIO, False)              
             time.sleep(0.0005*60/self.pos_speed)                
             GPIO.output(self.pushIO, True)
@@ -134,14 +137,18 @@ class OrientalMotor(object):
             
     def position_pull(self):
         self.idt_motor()
-        for i in range(0, 1000*-self.position/self.pos_motor_flag):
+	distance = int(1000*-self.position/self.pos_motor_flag)
+        for i in range(0, distance):
             GPIO.output(self.pullIO, False)              
             time.sleep(0.0005*60/self.pos_speed)             
             GPIO.output(self.pullIO, True)
             time.sleep(0.0005*60/self.pos_speed)
             self.count += 1
 
+
 #motor = OrientalMotor(20, 21)
-#motor.set_speed(-300)
-#time.sleep(5)
+#motor.set_position(-1)
+#motor.set_pos_speed(200)
+#motor.position_move()
+#time.sleep(1)
 #motor.set_speed(0)
