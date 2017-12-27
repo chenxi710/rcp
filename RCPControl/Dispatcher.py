@@ -15,10 +15,10 @@ class Dispatcher(object):
         self.context = context
         self.flag = True
         self.draw_back_guidewire_curcuit_flag = True
-        self.guidewireProgressMotor = OrientalMotor(20, 21)
+        self.guidewireProgressMotor = OrientalMotor(20, 21, True)
         self.guidewireRotateMotor = MaxonMotor(2, "EPOS2", "MAXON SERIAL V2", "USB", "USB0", 1000000)
-        self.catheterMotor = OrientalMotor(14, 15)
-        self.angioMotor = OrientalMotor(23, 24)
+        self.catheterMotor = OrientalMotor(14, 15, True)
+        self.angioMotor = OrientalMotor(23, 24, False)
 
         self.gripperFront = Gripper(7)
         self.gripperBack = Gripper(8)
