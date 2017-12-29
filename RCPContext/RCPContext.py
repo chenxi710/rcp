@@ -12,11 +12,34 @@ class RCPContext:
         self.guidewireProgressInstructionSequence = []
         self.guidewireRotateInstructionSequence = []
         self.contrastMediaPushInstructionSequence = []
+	
+	self.injectionCommandSequence = []
 
         self.retractInstructionSequence = []
 	self.guidewireMovingDistance = []
 	
 	self.systemStatus = True
+
+    def append_new_injection_msg(self, injection_msg):
+	self.injectionCommandSequence.append(injection_msg)
+	
+    def append_new_injection_msg(self, msg):
+        self.inputLock.acquire()
+        self.injectionCommandSequence.append(msg)
+        self.inputLock.release()
+
+    def fetch_latest_injection_msg_msg(self):
+        self.inputLock.acquire()
+        length = len(self.injectionCommandSequence)
+        ret = self.injectionCommandSequence.pop(length-1)
+        self.inputLock.release()
+        return ret
+
+    def get_injection_command_sequence_length(self):
+        self.inputLock.acquire()
+        length = len(self.injectionCommandSequence)
+        self.inputLock.release()
+        return length
 
     def close_system(self):
 	self.systemStatus = False

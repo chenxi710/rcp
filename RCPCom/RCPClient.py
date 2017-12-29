@@ -76,7 +76,7 @@ class RCPClient:
         return msg
 
     def send_handshake_message(self):
-        
+	print 'send handske message'        
         # header 10 byte
         data_type = 1  # 2
         origin_id = 1  # 1

@@ -95,6 +95,13 @@ class Dispatcher(object):
             if self.draw_back_guidewire_curcuit_flag == False:
                 return 
             self.draw_back_guidewire_curcuit()
+	if self.context.get_injection_command_sequence_length() > 0:
+	    msg = self.context.fetch_latest_injection_msg_msg()
+            #print "injection command", msg.get_speed(),msg.get_volume()		
+	    self.angioMotor.set_speed(msg.get_speed())
+	    self.angioMotor.set_position(msg.get_volume())
+	    self.angioMotor.push_contrast_media()
+
         
     def draw_back_guidewire_curcuit(self):
             self.context.clear()

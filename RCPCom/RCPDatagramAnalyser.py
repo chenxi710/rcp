@@ -1,6 +1,7 @@
 from RCPContext.RCPContext import RCPContext
 import RCPDatagram
 from MotorMsg import MotorMsg
+from InjectionMsg import InjectionMsg
 
 
 class RCPDatagramAnalyser:
@@ -13,7 +14,8 @@ class RCPDatagramAnalyser:
             2: "HandShakeCommitMsg",
             3: "MotorMsg",
             4: "CTImage",
-	    5: "CloseSessionMsg"
+	    5: "CloseSessionMsg",
+	    9: "InjectionMsg"
         }
 
         self.switcher_instruction = {
@@ -37,7 +39,14 @@ class RCPDatagramAnalyser:
             pass
 	elif self.switcher[datagram.get_data_type()] == "CloseSessionMsg":
 	    self.decode_close_session_message(datagram)	
-    
+	elif self.switcher[datagram.get_data_type()] == "InjectionMsg":
+            self.decode_injection_message(datagram)
+    	
+    def decode_injection_message(self, datagram):	
+        datagram_body = datagram.get_itc_datagram_body()
+	injection_msg = InjectionMsg(datagram)
+	self.context.append_new_injection_msg(injection_msg)	
+
     def decode_close_session_message(self, datagram):
 	datagram_body = datagram.get_itc_datagram_body()	
 	self.parent.close_session()	

@@ -36,15 +36,18 @@ class OrientalMotor(object):
         self.pos_motor_flag = 2
 	self.re_vol_pos = 6.5
         self.position = 0
-	self.re_volsp_possp = 30 
+	self.re_volsp_possp = 1800 
         self.pos_speed = 60
+	
+	self.pos_count = 0
+#	self.all_sleep_time = 0
 
 	if self.mode:
 	    self.moveTask = threading.Thread(None, self.continuous_move)
             self.moveTask.start()
-	else:
-	    self.moveTask = threading.Thread(None, self.continuous_move_position)
-            self.moveTask.start()
+#	else:
+#	    self.moveTask = threading.Thread(None, self.continuous_move_position)
+#            self.moveTask.start()
 
 
     def close_device(self):
@@ -114,6 +117,7 @@ class OrientalMotor(object):
     #Position Mode    
     def set_position(self, volume):
         self.position = int(volume*self.re_vol_pos)
+#	self.pos_count+= self.position
 
     def set_pos_speed(self, vol_speed):
         self.pos_speed = int(vol_speed*self.re_volsp_possp)
@@ -122,12 +126,31 @@ class OrientalMotor(object):
         while self.pos_flag:                     
             if self.position > 0:                   
                 self.position_push()
+		time.sleep(self.get_position_sleep_time())
 #		self.pos_flag = False
             elif self.position < 0:
                 self.position_pull()
+		time.sleep(self.get_position_sleep_time())
 	    elif self.position == 0:
 		time.sleep(0.001)
 #		self.pos_flag = False
+    
+    def push_contrast_media(self):
+	self.position_push()
+	self.pos_count+= self.position
+        time.sleep(self.get_position_sleep_time())
+	print self.get_position_sleep_time()
+	
+    def pull_back(self):
+	self.set_position(self.pos_count)
+	self.set_pos_speed(self.pos_speed/self.re_volsp_possp)
+	self.position_pull()
+	time.sleep(self.get_position_count_sleep_time())
+	print self.get_position_count_sleep_time()
+	self.pos_count = 0
+#	self.all_sleep_time = 0
+	self.set_position(0)
+	self.set_pos_speed(0)
 
     def idt_motor(self):    #identify the motor type
         #if advancement motor, pos_motor_flag=4;
@@ -168,9 +191,9 @@ class OrientalMotor(object):
             distance = 0
             interval = 0
         else:
-            distance = int(-1000*self.position/self.pos_motor_flag)
+            distance = int(abs(1000*self.position/self.pos_motor_flag))
             interval = 0.0005*60/self.pos_speed
-#	print distance
+	print distance
         for i in range(0, distance):
             GPIO.output(self.pullIO, False)              
             time.sleep(interval)             
@@ -183,31 +206,44 @@ class OrientalMotor(object):
 	if self.position == 0 or self.pos_speed == 0:
 	    return 0.001
 	else:
+#	    self.all_sleep_time+= abs(self.position*60/self.pos_motor_flag/self.pos_speed/2)
 	    return abs(self.position*60/self.pos_motor_flag/self.pos_speed)
 
 
-motor = OrientalMotor(23, 24, True)
-motor.set_speed(50)
+    def get_position_count_sleep_time(self):
+        if self.pos_count == 0 or self.pos_speed == 0:
+            return 0.001
+        else:
+            return abs(self.pos_count*60/self.pos_motor_flag/self.pos_speed)
+
+"""
+# = OrientalMotor(23, 24, True)
+#motor.set_speed(50)
 #motor.continuous_move()
-time.sleep(2)
-motor.set_speed(0)
-#motor.continuous_move()
-time.sleep(2)
-motor.set_speed(-50)
-#motor.continuous_move()
-time.sleep(2)
+#time.sleep(2)
 #motor.set_speed(0)
-motor.close_device()
+#motor.continuous_move()
+#time.sleep(2)
+#motor.set_speed(-50)
+#motor.continuous_move()
+#time.sleep(2)
+#motor.set_speed(0)
+#motor.close_device()
 
 motor1 = OrientalMotor(23, 24, False)
 motor1.set_position(0.5)
-time.sleep(motor1.get_position_sleep_time())
-motor1.set_position(0)
-time.sleep(motor1.get_position_sleep_time())
-motor1.set_position(-0.5)
-time.sleep(motor1.get_position_sleep_time())
-motor1.close_position_device()
+motor1.push_contrast_media()
+#time.sleep(1)
+motor1.set_position(0.5)
+motor1.push_contrast_media()
+#time.sleep(1)
+motor1.pull_back()
+#time.sleep(motor1.get_position_sleep_time())
+#motor1.set_position(-0.5)
+#time.sleep(motor1.get_position_sleep_time())
+#motor1.close_position_device()
 #motor.set_pos_speed(100)
 #motor.position_move()
 #time.sleep(1)
 #motor.set_speed(0)
+"""
