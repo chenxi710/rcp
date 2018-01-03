@@ -11,8 +11,8 @@ class OrientalMotor(object):
         
         self.orientalMotorPushLock = threading.Lock()
         self.orientalMotorPullLock = threading.Lock()
-        self.orientalMotorPositionPushLock = threading.Lock()
-	self.orientalMotorPositionPullLock = threading.Lock()
+#       self.orientalMotorPositionPushLock = threading.Lock()
+#	self.orientalMotorPositionPullLock = threading.Lock()
 
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
@@ -33,10 +33,10 @@ class OrientalMotor(object):
         self.speed = 0
 
         #position mode
-        self.pos_motor_flag = 2
+        self.pos_motor_flag = 1
 	self.re_vol_pos = 6
         self.position = 0
-	self.re_volsp_possp = 180
+	self.re_volsp_possp = 360
         self.pos_speed = 60
 	
 	self.pos_count = 0
@@ -145,10 +145,10 @@ class OrientalMotor(object):
 #	print self.get_position_sleep_time()
 	
     def pull_back(self):
-	print self.pos_count
+#	print self.pos_count
 	self.set_position(self.pos_count)
-	print self.pos_speed
-#	self.set_pos_speed(self.pos_speed/self.re_volsp_possp)
+#	print self.pos_speed
+	self.set_pos_speed(self.pos_speed/self.re_volsp_possp)
 	self.position_pull()
 #	print self.get_position_count_sleep_time()
 	time.sleep(self.get_position_count_sleep_time())
@@ -173,7 +173,7 @@ class OrientalMotor(object):
 
         #if angioMotor, pos_motor_flag=??
         if self.pushIO == 23 and self.pullIO == 24:
-            self.pos_motor_flag = 2
+            self.pos_motor_flag = 1
     
     def position_push(self):
 #	self.orientalMotorPositionPushLock.acquire()

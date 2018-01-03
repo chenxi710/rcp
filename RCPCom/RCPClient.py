@@ -34,8 +34,11 @@ class RCPClient:
     def msg_producer(self):
 	if self.output_queue_manager.get_length()>0:
 	   if self.output_queue_manager.get_data_array_count_from_output_queue(0)>0:
-	      msg = self.output_queue_manager.get_data_array_from_output_queue(0)
-              self.msg_list.append(self.generate_msg(int(msg)))
+	        msg = self.output_queue_manager.get_data_array_from_output_queue(0)
+              	#print 'ultra sound:', msg
+	        # self.msg_list.append(self.generate_msg(int(msg)))
+		self.connection.sendall(self.generate_msg(int(msg)))
+	      
         #time.sleep(0.1)
 
     def generate_msg(self, v):
@@ -127,9 +130,9 @@ class RCPClient:
 
     def execute_rt_task(self):
         while self.launching:
-            # self.status_check()
+            #print "executer"
             self.msg_producer()
-            self.task()
+            # self.task()
             time.sleep(0.1)
         self.fermeture()
 

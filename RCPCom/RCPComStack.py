@@ -5,7 +5,7 @@ from RCPCom.RCPOutputQueueManager import OutputQueueManager
 from RCPCom.RCPDatagramAnalyser import RCPDatagramAnalyser
 from RCPCom.RCPDecodingTask import RCPDecodingTask
 from RCPCom.RCPEncodingTask import RCPEncodingTask
-
+#import sys
 
 class RCPComStack():
     def __init__(self, context):
@@ -28,7 +28,9 @@ class RCPComStack():
         self.clientList.append(client)
 
     def launch_transmission_task_by_addr(self, addr):
-        for client in self.clientList:
+        
+	for client in self.clientList:
+	    # print addr, client.get_addr()
             if client.get_addr() == addr:
                 client.launch()
 
@@ -37,3 +39,4 @@ class RCPComStack():
 	self.serv.terminate_server()
 	self.decodingTask.stop()
 	self.encodingTask.stop()
+#	#sys.exit(0)

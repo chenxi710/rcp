@@ -3,6 +3,7 @@
 
 import threading
 import time
+import sys
 from RCPContext.RCPContext import RCPContext
 from OrientalMotor import OrientalMotor
 from Gripper import Gripper
@@ -35,13 +36,13 @@ class Dispatcher(object):
 	self.global_guidewire_distance = distance	
 
     def listening(self):
-        while self.flag:
-            
+        while self.flag:            
             if not self.context.get_system_status():
 		self.guidewireRotateMotor.close_device()
 		self.guidewireProgressMotor.close_device()
 		self.catheterMotor.close_device()
 		self.angioMotor.close_device()
+		sys.exit(0)
 		self.flag = False
 
 		print "system terminated"	

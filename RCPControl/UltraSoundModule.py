@@ -7,7 +7,6 @@ import threading
 import random
 
 
-
 class UltraSoundModule(object):
     def __init__(self, parent, context):
 	self.context = context

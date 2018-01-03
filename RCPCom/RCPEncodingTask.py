@@ -25,7 +25,7 @@ class RCPEncodingTask:
             if self.output_queue_manager.get_length() > 0:
                 for cpt in range(0, self.output_queue_manager.get_length()):
                     if self.context.get_latest_guidewire_moving_distance_sequence_length()>0:
-		       msg = self.context.fetch_latest_guidewire_moving_distance_msg()
-		       self.output_queue_manager.add_datagram_by_id(cpt, msg)
-            time.sleep(0.1)
+		        msg = self.context.fetch_latest_guidewire_moving_distance_msg()
+		        self.output_queue_manager.add_datagram_by_id(cpt, msg)
+            time.sleep(0.05)
 
