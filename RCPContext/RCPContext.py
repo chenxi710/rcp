@@ -12,16 +12,33 @@ class RCPContext:
         self.guidewireProgressInstructionSequence = []
         self.guidewireRotateInstructionSequence = []
         self.contrastMediaPushInstructionSequence = []
-	
 	self.injectionCommandSequence = []
-
         self.retractInstructionSequence = []
 	self.guidewireMovingDistance = []
-	
-	self.systemStatus = True
+	self.closeSessionSequence = []
 
+	self.systemStatus = True
+     
+    def append_close_session_msg(self, close_session_msg):
+	self.closeSessionSequence.append(close_session_msg)
+    
+    def fetch_close_session_msg(self):
+        self.inputLock.acquire()
+        length = len(self.closeSessionSequence)
+        ret = self.closeSessionSequence.pop(length-1)
+        self.inputLock.release()
+        return ret
+	
+    def get_close_session_sequence_length(self):
+        self.inputLock.acquire()
+        length = len(self.closeSessionSequence)
+        self.inputLock.release()
+        return length
+
+    """
     def append_new_injection_msg(self, injection_msg):
-	self.injectionCommandSequence.append(injection_msg)
+        self.injectionCommandSequence.append(injection_msg)
+    """
 	
     def append_new_injection_msg(self, msg):
         self.inputLock.acquire()
@@ -50,7 +67,8 @@ class RCPContext:
         self.contrastMediaPushInstructionSequence = []
         self.retractInstructionSequence = []
         self.guidewireMovingDistance = []
-	
+	self.closeSessionSequence = []
+
     def open_system(self):
 	self.systemStatus = True
 
@@ -62,8 +80,9 @@ class RCPContext:
         self.guidewireProgressInstructionSequence = []
         self.guidewireRotateInstructionSequence = []
         self.contrastMediaPushInstructionSequence = []
-
         self.retractInstructionSequence = []
+        self.guidewireMovingDistance = []
+        self.closeSessionSequence = []
 
     def set_distance(self, dis):
 	self.guidewireMovingDistance.append(dis)

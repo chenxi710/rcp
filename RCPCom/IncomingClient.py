@@ -59,7 +59,7 @@ class Client:
 
             self.inputQueueManager.add_datagram_by_id(self.clientIndex, datagram)
             self.cpt += 1
-            time.sleep(0.05)
+            time.sleep(0.02)
 
     def is_ready(self):
         return self.ready

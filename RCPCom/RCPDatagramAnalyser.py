@@ -39,7 +39,6 @@ class RCPDatagramAnalyser:
         elif self.switcher[datagram.get_data_type()] == "CTImage":
             pass
 	elif self.switcher[datagram.get_data_type()] == "CloseSessionMsg":
-	    print "close session message"
 	    self.decode_close_session_message(datagram)	
 	elif self.switcher[datagram.get_data_type()] == "InjectionMsg":
             self.decode_injection_message(datagram)
@@ -50,7 +49,8 @@ class RCPDatagramAnalyser:
 	self.context.append_new_injection_msg(injection_msg)	
 
     def decode_close_session_message(self, datagram):
-	datagram_body = datagram.get_itc_datagram_body()	
+	datagram_body = datagram.get_itc_datagram_body()
+	#print "close session message ..."	
 	self.parent.close_session()	
 
     def decode_hello_message(self, datagram):
@@ -61,19 +61,14 @@ class RCPDatagramAnalyser:
         motor_msg = MotorMsg(datagram)
         
         if self.switcher_instruction[motor_msg.motor_type] == "catheterMoveInstruction":
-#            print "catheterMoveInstruction"
-#            print "speed--------------------------", motor_msg.get_motor_speed()
             self.context.append_new_catheter_move_message(motor_msg)
         elif self.switcher_instruction[motor_msg.motor_type] == "guidewireProgressInstruction":
-#            print "guidewireProgressInstruction"
             self.context.append_new_guidewire_progress_move_message(motor_msg)
         elif self.switcher_instruction[motor_msg.motor_type] == "guidewireRotateInstruction":
-#            print "guidewireRotateInstruction"
             self.context.append_new_guidewire_rotate_move_message(motor_msg)
         elif self.switcher_instruction[motor_msg.motor_type] == "contrastMediaPushInstruction":
             self.context.append_new_contrast_media_push_move_message(motor_msg)
         elif self.switcher_instruction[motor_msg.motor_type] == "retractInstruction":
-#            print "retractInstruction"
             self.context.append_latest_retract_message(motor_msg)
 
     def decode_handshake_commit_message(self, datagram):

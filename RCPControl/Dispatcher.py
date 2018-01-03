@@ -48,7 +48,7 @@ class Dispatcher(object):
 	    else:
 	    	self.decode()	
 
-	    time.sleep(0.1)
+	    time.sleep(0.03)
 	    
 
     def decode(self):
@@ -135,7 +135,7 @@ class Dispatcher(object):
             self.gripperFront.gripper_chuck_loosen()
             self.guidewireProgressMotor.set_speed(-400)
             time.sleep(15)
-            self.guidewireProgressMotor.set_speed(1)
+            self.guidewireProgressMotor.set_speed(0)
             self.gripperFront.gripper_chuck_loosen()
             self.gripperBack.gripper_chuck_loosen()
             time.sleep(1)
@@ -144,7 +144,7 @@ class Dispatcher(object):
             time.sleep(1)
             self.guidewireRotateMotor.rm_move_to_position(40, -8000)
             time.sleep(8)
-            self.guidewireProgressMotor.set_speed(1)
+            self.guidewireProgressMotor.set_speed(0)
             self.gripperFront.gripper_chuck_loosen()
             self.gripperBack.gripper_chuck_loosen()
             self.draw_back_guidewire_curcuit_flag == True
@@ -171,7 +171,7 @@ class Dispatcher(object):
                 self.gripperFront.gripper_chuck_loosen()
                 self.guidewireProgressMotor.set_speed(-400)
                 time.sleep(15)
-                self.guidewireProgressMotor.set_speed(1)
+                self.guidewireProgressMotor.set_speed(0)
                 self.gripperFront.gripper_chuck_loosen()
                 self.gripperBack.gripper_chuck_loosen()
                 time.sleep(1)
@@ -180,7 +180,7 @@ class Dispatcher(object):
                 time.sleep(1)
                 self.guidewireRotateMotor.rm_move_to_position(40, -8000)
                 time.sleep(8)
-                self.guidewireProgressMotor.set_speed(1)
+                self.guidewireProgressMotor.set_speed(0)
                 self.gripperFront.gripper_chuck_loosen()
                 self.gripperBack.gripper_chuck_loosen()
                 time.sleep(1.5)
