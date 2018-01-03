@@ -23,7 +23,7 @@ class Dispatcher(object):
         self.gripperFront = Gripper(7)
         self.gripperBack = Gripper(8)
 
-        #self.ultraSoundModule = UltraSoundModule(context)
+        # self.ultraSoundModule = UltraSoundModule(context)
                 
         self.dispatchTask = threading.Thread(None, self.listening)
         self.dispatchTask.start()
@@ -97,10 +97,13 @@ class Dispatcher(object):
             self.draw_back_guidewire_curcuit()
 	if self.context.get_injection_command_sequence_length() > 0:
 	    msg = self.context.fetch_latest_injection_msg_msg()
-            #print "injection command", msg.get_speed(),msg.get_volume()		
-	    self.angioMotor.set_speed(msg.get_speed())
-	    self.angioMotor.set_position(msg.get_volume())
-	    self.angioMotor.push_contrast_media()
+            print "injection command", msg.get_speed(),msg.get_volume()
+	    if msg.get_volume() < 10:		
+	    	self.angioMotor.set_pos_speed(msg.get_speed())
+	   	self.angioMotor.set_position(msg.get_volume())
+	    	self.angioMotor.push_contrast_media()
+	    elif msg.get_volume() == 50.0:
+		self.angioMotor.pull_back()
 
         
     def draw_back_guidewire_curcuit(self):

@@ -4,6 +4,8 @@
 import RPi.GPIO as GPIO
 import time
 import threading
+import random
+
 
 
 class UltraSoundModule(object):
@@ -18,11 +20,12 @@ class UltraSoundModule(object):
         GPIO.setup(self.Trig, GPIO.OUT, initial=GPIO.LOW)
 	GPIO.setup(self.Echo, GPIO.IN)
 	self.moveTask = threading.Thread(None, self.read)
-       	#self.moveTask.start()
+       	self.moveTask.start()
 				
     def read(self):
 	cpt = 0
         while self.flag:
+		"""
 		GPIO.output(self.Trig, True)
 		time.sleep(0.00001)
 		GPIO.output(self.Trig, False)
@@ -34,9 +37,10 @@ class UltraSoundModule(object):
 		end = time.time()
 			
 		distance = round(((end-start)*340*100/2),2)
-			
-		time.sleep(0.5)
-		#print distance
+		"""
+	
+		time.sleep(0.1)
+		distance = random.uniform(1,10)
 		self.context.set_distance(distance)
 		cpt += 1
 

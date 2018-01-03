@@ -36,7 +36,7 @@ class RCPClient:
 	   if self.output_queue_manager.get_data_array_count_from_output_queue(0)>0:
 	      msg = self.output_queue_manager.get_data_array_from_output_queue(0)
               self.msg_list.append(self.generate_msg(int(msg)))
-        time.sleep(0.1)
+        #time.sleep(0.1)
 
     def generate_msg(self, v):
 	
@@ -85,7 +85,7 @@ class RCPClient:
         dlc = 6  # 2
 
         # body
-        ip = [172, 20, 141, 104]  # 4
+        ip = [172, 20, 141, 234]  # 4
         port = 10704  # 2
 
         timestamps_msb = timestamps / (2 ** 16)
@@ -130,7 +130,7 @@ class RCPClient:
             # self.status_check()
             self.msg_producer()
             self.task()
-            time.sleep(0.2)
+            time.sleep(0.1)
         self.fermeture()
 
     def read_all(self, count):
