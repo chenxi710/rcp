@@ -9,9 +9,9 @@ import random
 
 
 class UltraSoundModule(object):
-    def __init__(self, context):
+    def __init__(self, parent, context):
 	self.context = context
-
+        self.parent = parent
 	self.flag = True
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
@@ -40,8 +40,9 @@ class UltraSoundModule(object):
 		"""
 	
 		time.sleep(0.1)
-		distance = random.uniform(1,10)
-		self.context.set_distance(distance)
+		distance = random.uniform(12,25)
+		self.parent.set_global_guidewire_distance(distance)
+		#self.context.set_distance(distance)
 		cpt += 1
 
 #x = UltraSoundModule(0)	

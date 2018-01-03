@@ -14,8 +14,8 @@ class RCPDatagramAnalyser:
             2: "HandShakeCommitMsg",
             3: "MotorMsg",
             4: "CTImage",
-	    5: "CloseSessionMsg",
-	    9: "InjectionMsg"
+	    9: "InjectionMsg",
+	   10: "CloseSessionMsg"
         }
 
         self.switcher_instruction = {
@@ -27,6 +27,7 @@ class RCPDatagramAnalyser:
         }
 
     def analyse(self, cpt, datagram):
+	#print datagram.get_data_type()
         if self.switcher[datagram.get_data_type()] == "HelloMsg":
             self.decode_hello_message(datagram)
         elif self.switcher[datagram.get_data_type()] == "HandShakeMsg":
@@ -38,6 +39,7 @@ class RCPDatagramAnalyser:
         elif self.switcher[datagram.get_data_type()] == "CTImage":
             pass
 	elif self.switcher[datagram.get_data_type()] == "CloseSessionMsg":
+	    print "close session message"
 	    self.decode_close_session_message(datagram)	
 	elif self.switcher[datagram.get_data_type()] == "InjectionMsg":
             self.decode_injection_message(datagram)

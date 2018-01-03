@@ -8,12 +8,15 @@ class RCPDecodingTask:
         self.inputQueueManager = input_queue_manager
         self.context = _context
         self.datagramAnalyser = _datagram_analyser
-
+	self.flag = True
         self.receptionTask = threading.Thread(None, self.decodage)
         self.receptionTask.start()
+    
+    def stop(self):
+	self.flag = False
 
     def decodage(self):
-        while True:
+        while self.flag:
             # send system status to incoming client
             if self.inputQueueManager.get_length() > 0:
                 for cpt in range(0, self.inputQueueManager.get_length()):

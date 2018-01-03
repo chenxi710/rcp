@@ -34,3 +34,6 @@ class RCPComStack():
 
     def close_session(self):
 	self.context.close_system()
+	self.serv.terminate_server()
+	self.decodingTask.stop()
+	self.encodingTask.stop()

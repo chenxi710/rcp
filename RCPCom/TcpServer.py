@@ -25,6 +25,7 @@ class TcpServer:
         self.listeningTask.start()
 
     def terminate_server(self):
+	print "socket server close"
         self.flag = False
         self.server_socket.close()
 
