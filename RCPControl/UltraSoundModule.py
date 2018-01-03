@@ -38,10 +38,10 @@ class UltraSoundModule(object):
 		distance = round(((end-start)*340*100/2),2)
 		"""
 	
-		time.sleep(0.05)
+		time.sleep(0.15)
 		distance = random.uniform(12,25)
 		self.parent.set_global_guidewire_distance(distance)
-		self.context.set_distance(distance)
+#		self.context.set_distance(distance)
 		cpt += 1
 
 #x = UltraSoundModule(0)	

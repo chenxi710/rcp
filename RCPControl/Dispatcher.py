@@ -42,7 +42,7 @@ class Dispatcher(object):
 		self.guidewireProgressMotor.close_device()
 		self.catheterMotor.close_device()
 		self.angioMotor.close_device()
-		sys.exit(0)
+		sys.exit()
 		self.flag = False
 
 		print "system terminated"	

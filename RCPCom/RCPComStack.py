@@ -5,7 +5,7 @@ from RCPCom.RCPOutputQueueManager import OutputQueueManager
 from RCPCom.RCPDatagramAnalyser import RCPDatagramAnalyser
 from RCPCom.RCPDecodingTask import RCPDecodingTask
 from RCPCom.RCPEncodingTask import RCPEncodingTask
-#import sys
+import sys
 
 class RCPComStack():
     def __init__(self, context):
@@ -39,4 +39,4 @@ class RCPComStack():
 	self.serv.terminate_server()
 	self.decodingTask.stop()
 	self.encodingTask.stop()
-#	#sys.exit(0)
+	sys.exit(0)

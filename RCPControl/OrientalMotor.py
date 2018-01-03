@@ -227,7 +227,7 @@ class OrientalMotor(object):
 #	    print self.pos_count, self.pos_speed
             return abs(self.pos_count*self.re_vol_pos*60/self.pos_motor_flag/self.pos_speed)
 
-"""
+
 #motor = OrientalMotor(23, 24, True)
 #motor.set_speed(50)
 #motor.continuous_move()
@@ -260,4 +260,4 @@ motor1.pull_back()
 #motor.position_move()
 #time.sleep(1)
 #motor.set_speed(0)
-"""
+
