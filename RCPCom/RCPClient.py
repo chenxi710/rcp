@@ -35,7 +35,7 @@ class RCPClient:
 	if self.output_queue_manager.get_length()>0:
 	   if self.output_queue_manager.get_data_array_count_from_output_queue(0)>0:
 	        msg = self.output_queue_manager.get_data_array_from_output_queue(0)
-              	#print 'ultra sound:', msg
+              	print 'ultra sound:', msg
 	        # self.msg_list.append(self.generate_msg(int(msg)))
 		self.connection.sendall(self.generate_msg(int(msg)))
 	      

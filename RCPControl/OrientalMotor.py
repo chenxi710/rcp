@@ -34,10 +34,10 @@ class OrientalMotor(object):
 
         #position mode
         self.pos_motor_flag = 1
-	self.re_vol_pos = 6
+	self.re_vol_pos = 3.4
         self.position = 0
-	self.re_volsp_possp = 360
-        self.pos_speed = 60
+	self.re_volsp_possp = 204.0
+        self.pos_speed = 60.0
 	
 	self.pos_count = 0
 #	self.all_sleep_time = 0
@@ -73,14 +73,16 @@ class OrientalMotor(object):
 #            if self.speed in range(0, 20):
 #                time.sleep(0.1)
 #                continue
+	     
             if self.speedFlag == 0:
-		time.sleep(0.001)
+		time.sleep(0.1)
 
             if self.speedFlag == 1:
                 self.push()
             
             if self.speedFlag == 2:
-                self.pull()
+                self.pull()	     
+
 	    
     def rtz(self):
         GPIO.output(self.pushIO, True)
@@ -116,11 +118,13 @@ class OrientalMotor(object):
 
     #Position Mode    
     def set_position(self, volume):
-        self.position = int(volume*self.re_vol_pos)
+        self.position = volume*self.re_vol_pos
+#	print self.position
 #	self.pos_count+= self.position
 
     def set_pos_speed(self, vol_speed):
-        self.pos_speed = int(vol_speed*self.re_volsp_possp)
+        self.pos_speed = vol_speed*self.re_volsp_possp
+#	print self.pos_speed
         
     def continuous_move_position(self):
         while self.pos_flag:                     
@@ -136,22 +140,26 @@ class OrientalMotor(object):
 #		self.pos_flag = False
     
     def push_contrast_media(self):
+#	self.idt_motor()
 	self.position_push()
 	self.pos_count+= self.position/self.re_vol_pos
+	time.sleep(0.001)
+#	self.stop()
 #	print self.pos_count
 #	print self.position
 #	print self.pos_speed
-        time.sleep(self.get_position_sleep_time())
+#        time.sleep(self.get_position_sleep_time())
 #	print self.get_position_sleep_time()
 	
     def pull_back(self):
+#	self.idt_motor()
 #	print self.pos_count
 	self.set_position(self.pos_count)
 #	print self.pos_speed
 	self.set_pos_speed(self.pos_speed/self.re_volsp_possp)
 	self.position_pull()
 #	print self.get_position_count_sleep_time()
-	time.sleep(self.get_position_count_sleep_time())
+#	time.sleep(self.get_position_count_sleep_time())
 #	print self.get_position_count_sleep_time()
 	self.stop()
 
@@ -173,24 +181,26 @@ class OrientalMotor(object):
 
         #if angioMotor, pos_motor_flag=??
         if self.pushIO == 23 and self.pullIO == 24:
-            self.pos_motor_flag = 1
+            self.pos_motor_flag = 2
     
     def position_push(self):
 #	self.orientalMotorPositionPushLock.acquire()
         self.idt_motor()
+	print self.pos_motor_flag
         if self.position == 0 or self.pos_speed == 0:
             distance = 0
 	    interval = 0
 	else:
             distance = int(1000*self.position/self.pos_motor_flag)
-	    interval = 0.0005*60/self.pos_speed
-#	print distance
+	    interval = 0.0005*60/self.pos_speed*self.pos_motor_flag
+	print distance
+	print interval
         for i in range(0, distance): 
             GPIO.output(self.pushIO, False)              
             time.sleep(interval)                
             GPIO.output(self.pushIO, True)
             time.sleep(interval)
-            self.count += 1
+#            self.count += 1
 #	self.orientalMotorPositionPushLock.release()
 
             
@@ -202,14 +212,14 @@ class OrientalMotor(object):
             interval = 0
         else:
             distance = int(abs(1000*self.position/self.pos_motor_flag))
-            interval = 0.0005*60/self.pos_speed
+            interval = 0.0005*60/self.pos_speed*self.pos_motor_flag
 #	print distance
         for i in range(0, distance):
             GPIO.output(self.pullIO, False)              
             time.sleep(interval)             
             GPIO.output(self.pullIO, True)
             time.sleep(interval)
-            self.count += 1
+#            self.count += 1
 #	self.orientalMotorPositionPullLock.release()
 
     def get_position_sleep_time(self):
@@ -217,7 +227,7 @@ class OrientalMotor(object):
 	    return 0.001
 	else:
 #	    self.all_sleep_time+= abs(self.position*60/self.pos_motor_flag/self.pos_speed)
-	    return abs(self.position*60/self.pos_motor_flag/self.pos_speed)
+	    return abs(self.position*60/self.pos_speed)
 
 
     def get_position_count_sleep_time(self):
@@ -225,39 +235,21 @@ class OrientalMotor(object):
             return 0.001
         else:
 #	    print self.pos_count, self.pos_speed
-            return abs(self.pos_count*self.re_vol_pos*60/self.pos_motor_flag/self.pos_speed)
+            return abs(self.pos_count*self.re_vol_pos*60/self.pos_speed)
 
 
-#motor = OrientalMotor(23, 24, True)
-#motor.set_speed(50)
-#motor.continuous_move()
-#time.sleep(2)
-#motor.set_speed(0)
-#motor.continuous_move()
-#time.sleep(2)
-#motor.set_speed(-50)
-#motor.continuous_move()
-#time.sleep(2)
-#motor.set_speed(0)
-#motor.close_device()
 
+"""
 motor1 = OrientalMotor(23, 24, False)
-motor1.set_position(2)
+motor1.set_position(10)
 motor1.set_pos_speed(2)
+start = time.time()
 motor1.push_contrast_media()
-#time.sleep(1)
-motor1.set_position(2)
-motor1.set_pos_speed(1)
-motor1.push_contrast_media()
-#time.sleep(1)
-motor1.pull_back()
 #motor1.stop()
-#time.sleep(motor1.get_position_sleep_time())
-#motor1.set_position(-0.5)
-#time.sleep(motor1.get_position_sleep_time())
-#motor1.close_position_device()
-#motor.set_pos_speed(100)
-#motor.position_move()
-#time.sleep(1)
-#motor.set_speed(0)
-
+end = time.time()
+print (end - start)
+start = time.time()
+motor1.pull_back()
+end = time.time()
+print (end - start)
+"""

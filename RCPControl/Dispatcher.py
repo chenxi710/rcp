@@ -24,13 +24,15 @@ class Dispatcher(object):
 
         self.gripperFront = Gripper(7)
         self.gripperBack = Gripper(8)
-
+	
+	self.frontLimitDistance = 12.0
+	self.behindLimitDistance = 24.0
         self.ultraSoundModule = UltraSoundModule(self, context)
                 
         self.dispatchTask = threading.Thread(None, self.listening)
         self.dispatchTask.start()
         self.cptt = 0;
-	self.global_guidewire_distance = 27.0
+	self.global_guidewire_distance = 15.0
         
     def set_global_guidewire_distance(self, distance):
 	self.global_guidewire_distance = distance	
@@ -48,10 +50,8 @@ class Dispatcher(object):
 		print "system terminated"	
 	    else:
 	    	self.decode()	
-
-	    time.sleep(0.03)
+	    time.sleep(0.05)
 	    
-
     def decode(self):
 
         if self.context.get_catheter_move_instruction_sequence_length() > 0:
@@ -67,34 +67,42 @@ class Dispatcher(object):
 
 	if not self.needToRetract:
             if self.context.get_guidewire_progress_instruction_sequence_length() > 0:
-	        if (self.global_guidewire_distance > 11.0) and (self.global_guidewire_distance < 26.0):
+		self.global_guidewire_distance = self.ultraSoundModule.read_current_distance()
+	        if (self.global_guidewire_distance > self.frontLimitDistance) and (self.global_guidewire_distance < self.behindLimitDistance):
                	    msg = self.context.fetch_latest_guidewire_progress_move_msg()
 	   	    if self.draw_back_guidewire_curcuit_flag == False:
                         return 
-           	    if msg.get_motor_orientation() == 0:
+           	    if msg.get_motor_orientation() == 0 and abs(msg.get_motor_speed()) < 40*2*60:
+			#print -msg.get_motor_speed()
 	      	        self.guidewireProgressMotor.set_speed(-msg.get_motor_speed())
               	        self.cptt = 0
-                    elif msg.get_motor_orientation() == 1:
+                    elif msg.get_motor_orientation() == 1 and abs(msg.get_motor_speed()) < 40*2*60:
+			#print msg.get_motor_speed()
                         self.guidewireProgressMotor.set_speed(msg.get_motor_speed())
-	        else:
+		    else:
+			self.guidewireProgressMotor.set_speed(0)
+	        elif self.global_guidewire_distance <= self.frontLimitDistance:
+		    #print "retract"
+		    self.guidewireProgressMotor.set_speed(0)
 		    self.needToRetract = True
 		    retractTask = threading.Thread(None, self.draw_back_guidewire_curcuit)
        		    retractTask.start()
+		else:
+		    #print "hehe", self.global_guidewire_distance
+		    self.guidewireProgressMotor.set_speed(100)
 
-        if self.context.get_guidewire_rotate_instruction_sequence_length() > 0:
-            msg = self.context.fetch_latest_guidewire_rotate_move_msg()
-            speed = msg.get_motor_speed()
-            position = (msg.get_motor_position()*2000)/360
-            if self.draw_back_guidewire_curcuit_flag == False:
-                return             
-            if msg.get_motor_orientation() == 0:
-#                print "speed----------0", speed, position
-                self.guidewireRotateMotor.rm_move(speed)
-                pass
-            elif msg.get_motor_orientation() == 1:
-#                print "speed----------1", speed, position
-                self.guidewireRotateMotor.rm_move(-speed)
-                pass
+       	    if self.context.get_guidewire_rotate_instruction_sequence_length() > 0:
+                msg = self.context.fetch_latest_guidewire_rotate_move_msg()
+                speed = msg.get_motor_speed()
+                position = (msg.get_motor_position()*2000)/360
+                if self.draw_back_guidewire_curcuit_flag == False:
+                    return             
+                if msg.get_motor_orientation() == 0:
+                    self.guidewireRotateMotor.rm_move(speed)
+                    pass
+                elif msg.get_motor_orientation() == 1:
+                    self.guidewireRotateMotor.rm_move(-speed)
+                    pass
 
         if self.context.get_contrast_media_push_instruction_sequence_length() > 0:
             msg = self.context.fetch_latest_contrast_media_push_move_msg()
@@ -134,8 +142,17 @@ class Dispatcher(object):
             self.guidewireRotateMotor.rm_move_to_position(40, 8000) # +/loosen
             time.sleep(8)
             self.gripperFront.gripper_chuck_loosen()
-            self.guidewireProgressMotor.set_speed(-400)
-            time.sleep(15)
+            time.sleep(1)
+	    self.guidewireProgressMotor.set_speed(-600)
+            
+	    self.global_guidewire_distance = self.ultraSoundModule.read_current_distance()
+	    while self.global_guidewire_distance < (self.behindLimitDistance - 2):
+		time.sleep(0.5)
+		self.global_guidewire_distance = self.ultraSoundModule.read_current_distance()
+		print "retracting"
+	    print "back limitation arrived"
+
+	    #if self.global_guidewire_distance >= (self.behindLimitDistance - 1):
             self.guidewireProgressMotor.set_speed(0)
             self.gripperFront.gripper_chuck_loosen()
             self.gripperBack.gripper_chuck_loosen()
@@ -155,37 +172,50 @@ class Dispatcher(object):
 #            self.context.clear()
             self.draw_back_guidewire_curcuit_flag == False
             for i in range(0, 2):
-                dispatcher.guidewireProgressMotor.set_speed(400)
-                time.sleep(15)
-                dispatcher.guidewireProgressMotor.set_speed(0)
-                time.sleep(1)
-                
-                self.gripperFront.gripper_chuck_loosen()
+		self.gripperFront.gripper_chuck_loosen()
                 self.gripperBack.gripper_chuck_loosen()
                 time.sleep(1)
                 self.gripperFront.gripper_chuck_fasten()
                 self.gripperBack.gripper_chuck_fasten()
                 time.sleep(1)
-                
+
                 self.guidewireRotateMotor.rm_move_to_position(40, 8000) # +/loosen
                 time.sleep(8)
                 self.gripperFront.gripper_chuck_loosen()
-                self.guidewireProgressMotor.set_speed(-400)
-                time.sleep(15)
+
+		self.global_guidewire_distance = self.ultraSoundModule.read_current_distance()
+                self.guidewireProgressMotor.set_speed(600)
+		while self.global_guidewire_distance > (self.frontLimitDistance + 2):
+                    time.sleep(0.5)
+                    self.global_guidewire_distance = self.ultraSoundModule.read_current_distance()
+                    print "pushing"
+                print "pushing limitation arrived"
+                #time.sleep(15)
                 self.guidewireProgressMotor.set_speed(0)
-                self.gripperFront.gripper_chuck_loosen()
+                time.sleep(1)
+		
+		self.gripperFront.gripper_chuck_loosen()
                 self.gripperBack.gripper_chuck_loosen()
                 time.sleep(1)
                 self.gripperFront.gripper_chuck_fasten()
                 self.gripperBack.gripper_chuck_fasten()
                 time.sleep(1)
                 self.guidewireRotateMotor.rm_move_to_position(40, -8000)
-                time.sleep(8)
+                time.sleep(8)                
+		self.gripperFront.gripper_chuck_loosen()
+		#time.sleep(1)
+		self.guidewireProgressMotor.set_speed(-600)
+		while self.global_guidewire_distance < (self.behindLimitDistance - 2):
+                    time.sleep(0.5)
+                    self.global_guidewire_distance = self.ultraSoundModule.read_current_distance()
+                    print "fetching"
+                print "fetch limitation arrived"
+                #self.guidewireProgressMotor.set_speed(-400)
+                #time.sleep(15)
                 self.guidewireProgressMotor.set_speed(0)
-                self.gripperFront.gripper_chuck_loosen()
-                self.gripperBack.gripper_chuck_loosen()
-                time.sleep(1.5)
+                time.sleep(1)
             self.draw_back_guidewire_curcuit_flag == True
+
 """            
 import sys        
 dispatcher =  Dispatcher(1)

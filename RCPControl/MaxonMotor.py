@@ -342,7 +342,7 @@ class MaxonMotor(object):
                     #Result = 0
         return Result        
 
-
+"""
 #####################################################################################################################################################################################
 
 ##pDeviceName = CHAR("EPOS2")
@@ -370,7 +370,8 @@ class MaxonMotor(object):
 ##HaltVelocityMovement(RMHandle, RMNodeId, byref(errorCode))
 ##
 ##CloseDevice(RMHandle, byref(errorCode))
-#guidewireRotateMotor = MaxonMotor(2, "EPOS2", "MAXON SERIAL V2", "USB", "USB0", 1000000)
-#guidewireRotateMotor.rm_move_to_position(40,-8000)
-#time.sleep(6)
-#guidewireRotateMotor.close_device()
+guidewireRotateMotor = MaxonMotor(2, "EPOS2", "MAXON SERIAL V2", "USB", "USB0", 1000000)
+guidewireRotateMotor.rm_move_to_position(40,-8000)
+time.sleep(6)
+guidewireRotateMotor.close_device()
+"""
