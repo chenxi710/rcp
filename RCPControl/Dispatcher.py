@@ -8,7 +8,7 @@ from RCPContext.RCPContext import RCPContext
 from OrientalMotor import OrientalMotor
 from Gripper import Gripper
 from MaxonMotor import MaxonMotor
-from UltraSoundModule import UltraSoundModule
+from InfraredReflectiveSensor import InfraredReflectiveSensor
 
 
 class Dispatcher(object):
@@ -17,25 +17,29 @@ class Dispatcher(object):
         self.flag = True
 	self.needToRetract = False
         self.draw_back_guidewire_curcuit_flag = True
+             
         self.guidewireProgressMotor = OrientalMotor(20, 21, True)
+
         self.guidewireRotateMotor = MaxonMotor(2, "EPOS2", "MAXON SERIAL V2", "USB", "USB0", 1000000)
+       
         self.catheterMotor = OrientalMotor(14, 15, True)
+       
         self.angioMotor = OrientalMotor(23, 24, False)
 
         self.gripperFront = Gripper(7)
         self.gripperBack = Gripper(8)
 	
-	self.frontLimitDistance = 12.0
-	self.behindLimitDistance = 24.0
-        self.ultraSoundModule = UltraSoundModule(self, context)
+#	self.frontLimitDistance = 10.0
+#	self.behindLimitDistance = 21.0
+        self.infraredReflectiveSensor = InfraredReflectiveSensor()
                 
         self.dispatchTask = threading.Thread(None, self.listening)
         self.dispatchTask.start()
         self.cptt = 0;
-	self.global_guidewire_distance = 15.0
+	self.global_state = 0
         
-    def set_global_guidewire_distance(self, distance):
-	self.global_guidewire_distance = distance	
+    def set_global_state(self, state):
+	self.global_state = state	
 
     def listening(self):
         while self.flag:            
@@ -48,12 +52,12 @@ class Dispatcher(object):
 		self.flag = False
 
 		print "system terminated"	
-	    else:
+	    else:	
 	    	self.decode()	
 	    time.sleep(0.05)
 	    
     def decode(self):
-
+	
         if self.context.get_catheter_move_instruction_sequence_length() > 0:
             msg = self.context.fetch_latest_catheter_move_msg()
             if self.draw_back_guidewire_curcuit_flag == False:
@@ -67,8 +71,8 @@ class Dispatcher(object):
 
 	if not self.needToRetract:
             if self.context.get_guidewire_progress_instruction_sequence_length() > 0:
-		self.global_guidewire_distance = self.ultraSoundModule.read_current_distance()
-	        if (self.global_guidewire_distance > self.frontLimitDistance) and (self.global_guidewire_distance < self.behindLimitDistance):
+		self.set_global_state(self.infraredReflectiveSensor.read_current_state())
+		if self.global_state == 0:
                	    msg = self.context.fetch_latest_guidewire_progress_move_msg()
 	   	    if self.draw_back_guidewire_curcuit_flag == False:
                         return 
@@ -81,20 +85,22 @@ class Dispatcher(object):
                         self.guidewireProgressMotor.set_speed(msg.get_motor_speed())
 		    else:
 			self.guidewireProgressMotor.set_speed(0)
-	        elif self.global_guidewire_distance <= self.frontLimitDistance:
+	        elif self.global_state == 2:
 		    #print "retract"
 		    self.guidewireProgressMotor.set_speed(0)
 		    self.needToRetract = True
 		    retractTask = threading.Thread(None, self.draw_back_guidewire_curcuit)
        		    retractTask.start()
-		else:
+		elif self.global_state == 1:
 		    #print "hehe", self.global_guidewire_distance
 		    self.guidewireProgressMotor.set_speed(100)
+		elif self.global_state == 3:
+		    self.guidewireProgressMotor.set_speed(0)
 
        	    if self.context.get_guidewire_rotate_instruction_sequence_length() > 0:
                 msg = self.context.fetch_latest_guidewire_rotate_move_msg()
                 speed = msg.get_motor_speed()
-                position = (msg.get_motor_position()*2000)/360
+                position = (msg.get_motor_position()*4000)/360
                 if self.draw_back_guidewire_curcuit_flag == False:
                     return             
                 if msg.get_motor_orientation() == 0:
@@ -122,12 +128,21 @@ class Dispatcher(object):
 	if self.context.get_injection_command_sequence_length() > 0:
 	    msg = self.context.fetch_latest_injection_msg_msg()
             #print "injection command", msg.get_speed(),msg.get_volume()
-	    if msg.get_volume() < 10:		
+	   
+	    if msg.get_volume() < 18:		
 	    	self.angioMotor.set_pos_speed(msg.get_speed())
 	   	self.angioMotor.set_position(msg.get_volume())
 	    	self.angioMotor.push_contrast_media()
-	    elif msg.get_volume() == 50.0:
+	    elif msg.get_volume() == 500.0:
 		self.angioMotor.pull_back()
+	    """
+	    if msg.get_volume() < 360:
+                self.angioMotor.rm_move_to_position(int(msg.get_speed()),int(msg.get_volume()*4000/360))
+               # self.angioMotor.set_position(msg.get_volume())
+               # self.angioMotor.push_contrast_media()
+           # elif msg.get_volume() == 50.0:
+            #    self.angioMotor.pull_back()
+           """
 
     def draw_back_guidewire_curcuit(self):
             self.context.clear()
@@ -145,11 +160,11 @@ class Dispatcher(object):
             time.sleep(1)
 	    self.guidewireProgressMotor.set_speed(-600)
             
-	    self.global_guidewire_distance = self.ultraSoundModule.read_current_distance()
-	    while self.global_guidewire_distance < (self.behindLimitDistance - 2):
+	    self.global_state = self.infraredReflectiveSensor.read_current_state()
+	    while self.global_state != 1:
 		time.sleep(0.5)
-		self.global_guidewire_distance = self.ultraSoundModule.read_current_distance()
-		print "retracting"
+		self.global_state = self.infraredReflectiveSensor.read_current_state()
+		print "retracting", self.global_state
 	    print "back limitation arrived"
 
 	    #if self.global_guidewire_distance >= (self.behindLimitDistance - 1):
@@ -219,10 +234,11 @@ class Dispatcher(object):
 """            
 import sys        
 dispatcher =  Dispatcher(1)
-#dispatcher.guidewireProgressMotor.set_speed(-400)
+dispatcher.guidewireProgressMotor.set_speed(-400)
 #time.sleep(10)
 #dispatcher.guidewireProgressMotor.set_speed(0)
 #dispatcher.draw_back_guidewire_curcuit()
 dispatcher.push_guidewire()
-sys.exit() 
+sys.exit()
+
 """

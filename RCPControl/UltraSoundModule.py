@@ -51,13 +51,14 @@ class UltraSoundModule(object):
 		end = time.time()
 			
 		self.distance = round(((end-start)*340*100/2),2)
-		#print self.distance	
+		print self.distance	
 		
 		time.sleep(0.2)
-		#distance = random.uniform(12,25)
-		#print distance
-		self.parent.set_global_guidewire_distance(self.distance)
-		#self.context.set_distance(distance)
+		
+		#self.parent.set_global_guidewire_distance(self.distance)
 		cpt += 1
 
-#x = UltraSoundModule(0,0)	
+
+#x = UltraSoundModule(0,0)
+#x.read()
+	

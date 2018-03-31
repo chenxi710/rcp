@@ -34,7 +34,7 @@ class OrientalMotor(object):
 
         #position mode
         self.pos_motor_flag = 1
-	self.re_vol_pos = 3.4
+	self.re_vol_pos = 1    # 3.4
         self.position = 0
 	self.re_volsp_possp = 204.0
         self.pos_speed = 60.0
@@ -141,8 +141,10 @@ class OrientalMotor(object):
     
     def push_contrast_media(self):
 #	self.idt_motor()
+#	print 'start time', time.time()
 	self.position_push()
 	self.pos_count+= self.position/self.re_vol_pos
+#	print 'stop time', time.time()
 	time.sleep(0.001)
 #	self.stop()
 #	print self.pos_count
@@ -186,15 +188,15 @@ class OrientalMotor(object):
     def position_push(self):
 #	self.orientalMotorPositionPushLock.acquire()
         self.idt_motor()
-	print self.pos_motor_flag
+#	print self.pos_motor_flag
         if self.position == 0 or self.pos_speed == 0:
             distance = 0
 	    interval = 0
 	else:
             distance = int(1000*self.position/self.pos_motor_flag)
 	    interval = 0.0005*60/self.pos_speed*self.pos_motor_flag
-	print distance
-	print interval
+#	print distance
+#	print interval
         for i in range(0, distance): 
             GPIO.output(self.pushIO, False)              
             time.sleep(interval)                
@@ -240,8 +242,8 @@ class OrientalMotor(object):
 
 
 """
-motor1 = OrientalMotor(23, 24, False)
-motor1.set_position(10)
+motor1 = OrientalMotor(20, 21, False)
+motor1.set_position(-10)
 motor1.set_pos_speed(2)
 start = time.time()
 motor1.push_contrast_media()
@@ -249,7 +251,7 @@ motor1.push_contrast_media()
 end = time.time()
 print (end - start)
 start = time.time()
-motor1.pull_back()
+#motor1.pull_back()
 end = time.time()
 print (end - start)
 """

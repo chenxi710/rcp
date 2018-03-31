@@ -88,7 +88,7 @@ class RCPClient:
         dlc = 6  # 2
 
         # body
-        ip = [172, 20, 141, 234]  # 4
+        ip = [172, 20, 141, 232]  # 4
         port = 10704  # 2
 
         timestamps_msb = timestamps / (2 ** 16)

@@ -342,36 +342,11 @@ class MaxonMotor(object):
                     #Result = 0
         return Result        
 
-"""
-#####################################################################################################################################################################################
+##################################################################################################################################################################################
 
-##pDeviceName = CHAR("EPOS2")
-##pProtocolStackName = CHAR("MAXON SERIAL V2")
-##pInterfaceName = CHAR("USB")
-##pPortName = CHAR("USB0")
-##errorCode = UINT(0)
-##RMNodeId = USHORT(2)
-##TargetVelocity = LONG(20)
-##RMHandle = HANDLE(0)
-##
-##
-##
-##RMHandle = OpenDevice(pDeviceName, pProtocolStackName, pInterfaceName, pPortName, byref(errorCode))
-##
-##ClearFault(RMHandle, RMNodeId, errorCode)
-##
-##SetEnableState(RMHandle, RMNodeId, byref(errorCode))
-##
-##ActivateProfileVelocityMode(RMHandle, RMNodeId, byref(errorCode))
-##
-##MoveWithVelocity(RMHandle, RMNodeId, TargetVelocity, byref(errorCode))
-##time.sleep(1)
-##
-##HaltVelocityMovement(RMHandle, RMNodeId, byref(errorCode))
-##
-##CloseDevice(RMHandle, byref(errorCode))
-guidewireRotateMotor = MaxonMotor(2, "EPOS2", "MAXON SERIAL V2", "USB", "USB0", 1000000)
-guidewireRotateMotor.rm_move_to_position(40,-8000)
-time.sleep(6)
-guidewireRotateMotor.close_device()
-"""
+#test maxon motor to move on position mode
+#guidewireRotateMotor = MaxonMotor(2, "EPOS2", "MAXON SERIAL V2", "USB", "USB0", 1000000)
+#guidewireRotateMotor.rm_move_to_position(40,-8000)
+#time.sleep(6)
+#guidewireRotateMotor.close_device()
+

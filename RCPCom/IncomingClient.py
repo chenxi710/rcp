@@ -28,7 +28,7 @@ class Client:
         self.pos_count = 0
         self.fileSize = 1560 * 1440 * 2
         self.cpt = 0
-        
+	self.datagram_count = 0        
         self.receptionTask = threading.Thread(None, self.reception)
 
     def recvall(self, sock, count):
@@ -50,12 +50,17 @@ class Client:
 
     def reception(self):
         while True:
+	    #if self.datagram_count == 0:
+            #   print "start time", time.time()
+
             # send system status to incoming client
             msg = self.recvall(self.soc, 1024)
-#            print 'msg arriving'
-            datagram = RCPDatagram(msg)
+	    #self.datagram_count += 1
 
-#            print "get_data_type",self.clientIndex, datagram.get_data_type()
+	    #if self.datagram_count%1000 == 0:
+	    #   print "thousand datagram time:",self.datagram_count, time.time()
+
+            datagram = RCPDatagram(msg)
 
             self.inputQueueManager.add_datagram_by_id(self.clientIndex, datagram)
             self.cpt += 1
