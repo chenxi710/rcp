@@ -149,7 +149,7 @@ class OrientalMotor(object):
 #	print self.pos_count#######################################2
 	self.set_position(self.pos_count/2)
 #	print self.pos_speed
-	self.set_pos_speed(self.pos_speed/self.re_volsp_possp/2)
+	self.set_pos_speed(self.pos_speed/self.re_volsp_possp)
 	self.position_pull()
 #	print self.get_position_count_sleep_time()
 #	time.sleep(self.get_position_count_sleep_time())
@@ -231,12 +231,12 @@ class OrientalMotor(object):
             return abs(self.pos_count*self.re_vol_pos*60/self.pos_speed)
 
 
-"""
+
 motor1 = OrientalMotor(23, 24, False)
-motor1.set_position(4.5)
+motor1.set_position3)
 motor1.set_pos_speed(1.5)
 start = time.time()
 motor1.push_contrast_media()
 print time.time()-start
 #motor1.stop()
-"""
+
